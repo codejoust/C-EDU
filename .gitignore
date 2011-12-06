@@ -1,0 +1,4 @@
+./data/*.c
+./data/prog/*
+./real-data/
+nohup.out

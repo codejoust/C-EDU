@@ -1,0 +1,61 @@
+<style>
+    #stderr, #chstderr { color:maroon; }
+    #output { font-family: courier; }
+    #code { position:absolute; width: 100%; height: 95%; }
+    .ace_gutter-cell.err { background:pink; }
+
+</style>
+<b><input type="button" id="run" value="Run" /> editing: {{fname}}.c</b>
+<div id="output" style="">
+    <pre id="chstdout"></pre>
+    <pre id="stdout"></pre>
+    <pre id="chstderr"></pre>
+    <pre id="stderr"></pre>
+</div>
+<pre id="code"></pre>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script src="/static/js/ace.js"></script>
+<script src="/static/js/theme-textmate.js"></script>
+<script src="/static/js/mode-c_cpp.js"></script>
+
+<script>
+  //$.ajaxError(function(e, jqxhr, settings, ex){ alert(ex); });
+  $(function(){
+      $.get('/files', function(data){
+          $('#code').text(data);
+          var editor = window.editor = ace.edit("code");
+          editor.setTheme('ace/theme/textmate');
+          var cMode = require('ace/mode/c_cpp').Mode;
+          editor.getSession().setMode(new cMode());
+          editor.setShowPrintMargin(false);
+      });
+      $('#run').click(function(){
+        save_code();
+        $.get('/compile',function(data){
+            $('#chstdout,#stdout,#chstderr,#stderr').html('');
+            for (key in data){
+                $('#' + key).text(data[key]);
+            }
+            var gutters = $('.ace_gutter-cell');
+            gutters.find('.err').removeClass('err');
+            if ('stderr' in data && data['stderr'].length > 0){
+                errs = data['stderr'].match(/\.c:([0-9]+)/g)
+                for(var i =0; i < errs.length; i++){
+                    var numin = parseInt(errs[i].substr(3)) -1;
+                    console.log(numin);
+                    gutters.eq(numin).addClass('err');
+                }
+            }
+        });
+      });
+  });
+  function save_code(cb){
+      var sess = editor.getSession();
+      sess.setValue(sess.getValue().replace(/\0/g,''));
+      $.post('/files', {file: sess.getValue()}, function(data){
+        cb && cb(data);
+      });
+  }
+</script>
