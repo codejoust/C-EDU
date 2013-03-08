@@ -1,18 +1,25 @@
+<html>
+<head>
 <style>
     #stderr, #chstderr { color:maroon; }
     #output { font-family: courier; }
-    #code { position:absolute; width: 100%; height: 95%; }
+    #code { position:absolute; display:block; width: 100%; height: 95%; left:0; }
     .ace_gutter-cell.err { background:pink; }
-
+    .ace_invisible { color:#efefef !important; }
 </style>
-<b><input type="button" id="run" value="Run" /> editing: {{fname}}.c</b>
+</head>
+<body>
+
+
+<b><input type="button" id="run" value="Run" /> <input type="button" id="save" value="Save" />  editing: {{fname}}.c</b>
 <div id="output" style="">
     <pre id="chstdout"></pre>
     <pre id="stdout"></pre>
     <pre id="chstderr"></pre>
     <pre id="stderr"></pre>
 </div>
-<pre id="code"></pre>
+
+<div id="code"></div>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
@@ -22,14 +29,16 @@
 
 <script>
   //$.ajaxError(function(e, jqxhr, settings, ex){ alert(ex); });
+  var editor = window.editor = ace.edit("code");
   $(function(){
       $.get('/files', function(data){
-          $('#code').text(data);
-          var editor = window.editor = ace.edit("code");
+          //$('#code')[0].innerHTML(data);
+          editor.getSession().setValue(data);
+          editor.setShowInvisibles(true)
           editor.setTheme('ace/theme/textmate');
           var cMode = require('ace/mode/c_cpp').Mode;
           editor.getSession().setMode(new cMode());
-          editor.setShowPrintMargin(false);
+          //editor.setShowPrintMargin(false);
       });
       $('#run').click(function(){
         save_code();
@@ -50,6 +59,15 @@
             }
         });
       });
+      $('#save').click(function(){
+        var el = $(this);
+        save_code(function(){
+          el.attr('value', 'Saved!');
+          setTimeout(function(){
+            el.attr('value', 'Save');
+          }, 400);
+        });
+      });
   });
   function save_code(cb){
       var sess = editor.getSession();
@@ -59,3 +77,7 @@
       });
   }
 </script>
+
+
+</body>
+</html>

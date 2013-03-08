@@ -49,9 +49,9 @@ def get_flist():
 
 @app.route('/compile')
 def compile():
-  fbase = '/home/iain/py-interp/'
+  fbase = '/Users/iain/Code/old/py/py-interp/'
   fname = request.cookies.get('fname')
-  p = subprocess.Popen(['gcc','./data/' + fname + '.c','-o','./data/prog/' +fname],
+  p = subprocess.Popen(['g++','./data/' + fname + '.c','-o','./data/prog/' +fname],
           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
           cwd=fbase)
   output = {}
@@ -63,4 +63,4 @@ def compile():
   return jsonify(output)
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0',debug=True)
+  app.run(host='0.0.0.0',debug=False)

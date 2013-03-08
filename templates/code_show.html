@@ -1,14 +1,25 @@
+<html>
+<head>
+
+</head>
+<body onload="editor.setTheme('ace/theme/kr_theme');">
+
+
 <script src="/static/js/ace.js"></script>
-<script src="/static/js/theme-textmate.js"></script>
+<script src="/static/js/theme-kr.js"></script>
 <script src="/static/js/mode-c_cpp.js"></script>
 
 <pre id="code" style="width:99%;height:99%;position:relative;">{{code}}</pre>
 
 <script>
     var editor = window.editor = ace.edit("code");
-    editor.setTheme('ace/theme/textmate');
     var cMode = require('ace/mode/c_cpp').Mode;
     editor.getSession().setMode(new cMode());
     editor.setShowPrintMargin(false);
     editor.setReadOnly(true);
+    
 </script>
+
+
+</body>
+</html>
